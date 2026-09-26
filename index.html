@@ -29,7 +29,7 @@ header h2{margin:0;font-size:22px;letter-spacing:-.4px}
 .tools button,.tools a,.tools label{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:6px 12px;border-radius:999px;font:inherit;font-size:13px;cursor:pointer;text-decoration:none}
 .tools button.on{border-color:var(--accent);color:var(--accent)}
 .tools input[type=file]{display:none}
-.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:22px;align-items:start}
+.split{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1fr);gap:22px;align-items:start}
 .qs{display:flex;flex-direction:column;gap:12px}
 .q{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;scroll-margin-top:16px;cursor:pointer;transition:border-color .15s}
 .q.sel{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
@@ -51,7 +51,7 @@ header h2{margin:0;font-size:22px;letter-spacing:-.4px}
 .empty b{color:var(--ink)}
 .pages img{width:100%;max-width:900px;display:block;margin:0 auto 16px;border:1px solid var(--line);border-radius:6px;background:#fff}
 #status{font-size:12.5px;color:var(--muted)}
-@media (max-width:1100px){.split{grid-template-columns:1fr}.viewer{position:static}}
+@media (max-width:1100px){.split{grid-template-columns:1fr}.viewer{position:static;order:2}.qs{order:1}}
 @media (max-width:760px){.app{grid-template-columns:1fr}nav{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
   #list{display:flex;gap:6px;overflow-x:auto}#list .yr{display:none}#list button{white-space:nowrap;width:auto}}
 </style>
@@ -160,15 +160,16 @@ function render(){
     return;
   }
   page=e.qs[sel]?.p||1;
-  $('#body').innerHTML=`<div class="split"><div class="qs ${showWork?'':'hide-work'}">${e.qs.map((q,k)=>`
+  $('#body').innerHTML=`<div class="split">
+    <aside class="viewer"><div class="vbar"><button id="pv">‹</button><span id="pl"></span><button id="nx">›</button></div>
+      <img id="pimg" alt="시험지" hidden><div id="ph"></div></aside>
+    <div class="qs ${showWork?'':'hide-work'}">${e.qs.map((q,k)=>`
     <article class="q ${k===sel?'sel':''}" data-k="${k}" id="q${k}">
       <div class="qh"><span class="num">${q.q}</span><span class="pg">${q.p}면</span></div>
       <div class="ans">${q.a}</div>
       <div class="work">${q.w}</div>
       ${q.fig?`<img class="fig" loading="lazy" src="figs/${q.fig}" alt="${q.q}번 답 그림">`:''}
-    </article>`).join('')}</div>
-    <aside class="viewer"><div class="vbar"><button id="pv">‹</button><span id="pl"></span><button id="nx">›</button></div>
-      <img id="pimg" alt="시험지" hidden><div id="ph"></div></aside></div>`;
+    </article>`).join('')}</div></div>`;
   document.querySelectorAll('.q').forEach(c=>c.onclick=()=>select(+c.dataset.k,false));
   $('#pv').onclick=()=>setPage(page-1); $('#nx').onclick=()=>setPage(page+1);
   setPage(page);
