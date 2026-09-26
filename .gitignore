@@ -1,0 +1,5 @@
+# 학교 시험지 원본에서 나온 것들 — 저장소에 올리지 말 것
+pages/
+pdf/
+*.pdf
+!solutions/*.pdf

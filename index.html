@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>한성과고 물리 기출 풀이</title>
+<style>
+:root{
+  --bg:#f6f4ef;--panel:#fff;--ink:#1d1d1f;--muted:#6b6b70;--line:#e4e0d6;
+  --accent:#b8322a;--accent-soft:#fbe9e6;--ans:#fff7d6;--ans-line:#e8c547;--note:#7a5b00;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#17171a;--panel:#212125;--ink:#ececef;--muted:#9a9aa2;--line:#33333a;
+  --accent:#ff6b5e;--accent-soft:#3a2220;--ans:#3a3218;--ans-line:#8a7424;--note:#e6c86a;}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Pretendard","Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif}
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+nav{border-right:1px solid var(--line);padding:18px 12px;position:sticky;top:0;height:100vh;overflow:auto;background:var(--panel)}
+nav h1{font-size:15px;margin:0 8px 14px;letter-spacing:-.2px}
+nav h1 small{display:block;color:var(--muted);font-weight:400;font-size:12px}
+.yr{font-size:11px;color:var(--muted);margin:14px 8px 4px;font-weight:600;letter-spacing:.5px}
+nav button{display:block;width:100%;text-align:left;border:0;background:none;color:var(--ink);padding:7px 10px;border-radius:8px;font:inherit;font-size:13.5px;cursor:pointer}
+nav button:hover{background:var(--bg)}
+nav button.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+main{padding:22px clamp(16px,3vw,36px);min-width:0}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+header h2{margin:0;font-size:22px;letter-spacing:-.4px}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tools button,.tools a,.tools label{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:6px 12px;border-radius:999px;font:inherit;font-size:13px;cursor:pointer;text-decoration:none}
+.tools button.on{border-color:var(--accent);color:var(--accent)}
+.tools input[type=file]{display:none}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:22px;align-items:start}
+.qs{display:flex;flex-direction:column;gap:12px}
+.q{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;scroll-margin-top:16px;cursor:pointer;transition:border-color .15s}
+.q.sel{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.qh{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.num{background:var(--accent);color:#fff;font-weight:700;border-radius:8px;min-width:30px;height:28px;display:grid;place-items:center;font-size:14px;padding:0 6px}
+.pg{font-size:12px;color:var(--muted)}
+.ans{background:var(--ans);border-left:4px solid var(--ans-line);border-radius:8px;padding:9px 12px;font-weight:600;font-size:15.5px;overflow-wrap:anywhere}
+.ans::before{content:"답";display:inline-block;font-size:11px;background:var(--ans-line);color:#fff;border-radius:4px;padding:0 6px;margin-right:8px;vertical-align:2px}
+.work{margin-top:10px;font-size:14px;line-height:1.75;overflow-wrap:anywhere}
+.work:empty{display:none}
+.hide-work .work{display:none}
+.note{display:block;color:var(--note);font-size:12.5px;margin-top:4px}
+.fig{margin-top:10px;max-width:100%;border-radius:8px;background:#fff;border:1px solid var(--line)}
+.viewer{position:sticky;top:16px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px}
+.vbar{display:flex;align-items:center;justify-content:space-between;margin:0 4px 8px;font-size:13px;color:var(--muted)}
+.vbar button{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;width:30px;height:28px;cursor:pointer}
+.viewer img{width:100%;display:block;border-radius:6px;background:#fff;max-height:calc(100vh - 90px);object-fit:contain}
+.empty{border:1px dashed var(--line);border-radius:10px;padding:22px 16px;text-align:center;color:var(--muted);font-size:13.5px;line-height:1.8}
+.empty b{color:var(--ink)}
+.pages img{width:100%;max-width:900px;display:block;margin:0 auto 16px;border:1px solid var(--line);border-radius:6px;background:#fff}
+#status{font-size:12.5px;color:var(--muted)}
+@media (max-width:1100px){.split{grid-template-columns:1fr}.viewer{position:static}}
+@media (max-width:760px){.app{grid-template-columns:1fr}nav{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  #list{display:flex;gap:6px;overflow-x:auto}#list .yr{display:none}#list button{white-space:nowrap;width:auto}}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav>
+    <h1>물리 기출 풀이<small>한성과고 1학년 · 21회분</small></h1>
+    <div id="list"></div>
+  </nav>
+  <main>
+    <header>
+      <h2 id="title"></h2>
+      <div class="tools">
+        <button id="tWork" class="on">풀이 보기</button>
+        <button id="tMode">시험지 원본</button>
+        <a id="pdf" target="_blank">답지 PDF</a>
+        <label>시험지 PDF 불러오기<input id="file" type="file" accept="application/pdf" multiple></label>
+        <span id="status"></span>
+      </div>
+    </header>
+    <div id="body"></div>
+  </main>
+</div>
+<script src="data.js?v=2"></script>
+<script>
+const $=s=>document.querySelector(s);
+let cur=0,mode='q',showWork=true,page=1,sel=0,hasLocalPages=false,pdfPrefix='solutions/';
+const urlCache=new Map();
+
+/* ---------- 브라우저에 저장된 시험지 이미지 (IndexedDB) ---------- */
+const DB=new Promise((res,rej)=>{const r=indexedDB.open('hs-exam-pages',1);
+  r.onupgradeneeded=()=>r.result.createObjectStore('pages');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+const idbGet=async k=>{const db=await DB;return new Promise(r=>{const q=db.transaction('pages').objectStore('pages').get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)})};
+const idbPut=async(k,v)=>{const db=await DB;return new Promise(r=>{const t=db.transaction('pages','readwrite');t.objectStore('pages').put(v,k);t.oncomplete=()=>r()})};
+const idbKeys=async()=>{const db=await DB;return new Promise(r=>{const q=db.transaction('pages').objectStore('pages').getAllKeys();q.onsuccess=()=>r(q.result||[]);q.onerror=()=>r([])})};
+
+async function pageSrc(e,p){
+  const key=`${e.id}_p${p}`;
+  if(hasLocalPages)return `pages/${key}.jpg`;
+  if(urlCache.has(key))return urlCache.get(key);
+  const blob=await idbGet(key); if(!blob)return null;
+  const u=URL.createObjectURL(blob); urlCache.set(key,u); return u;
+}
+
+/* ---------- 내 PDF에서 페이지 그려 넣기 (pdf.js) ---------- */
+const CDN='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174';
+let pdfjsReady;
+function loadPdfjs(){
+  return pdfjsReady||(pdfjsReady=new Promise((res,rej)=>{
+    const s=document.createElement('script'); s.src=CDN+'/pdf.min.js';
+    s.onload=()=>{pdfjsLib.GlobalWorkerOptions.workerSrc=CDN+'/pdf.worker.min.js';res()};
+    s.onerror=()=>rej(new Error('pdf.js를 불러오지 못했습니다(오프라인?)')); document.head.appendChild(s);
+  }));
+}
+async function importPdfs(files){
+  try{ await loadPdfjs(); }catch(err){ $('#status').textContent=err.message; return; }
+  let done=0,unknown=[];
+  for(const f of files){
+    const e=D.find(x=>x.file===f.name);
+    if(!e){unknown.push(f.name);continue}
+    const doc=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;
+    for(let p=1;p<=doc.numPages;p++){
+      const pg=await doc.getPage(p), v0=pg.getViewport({scale:1}), v=pg.getViewport({scale:1100/v0.width});
+      const c=document.createElement('canvas'); c.width=v.width; c.height=v.height;
+      await pg.render({canvasContext:c.getContext('2d'),viewport:v}).promise;
+      const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',.78));
+      await idbPut(`${e.id}_p${p}`,blob);
+    }
+    urlCache.clear(); done++;
+    $('#status').textContent=`불러오는 중… ${done}/${files.length}`;
+  }
+  await refreshStatus();
+  if(unknown.length)$('#status').textContent+=` · 이름이 안 맞는 파일 ${unknown.length}개는 건너뜀`;
+  render();
+}
+async function refreshStatus(){
+  if(hasLocalPages){$('#status').textContent='시험지: 로컬 pages/ 사용 중';return}
+  const ids=new Set((await idbKeys()).map(k=>k.split('_p')[0]));
+  $('#status').textContent=ids.size?`시험지 ${ids.size}/${D.length}회분 저장됨`:'시험지 원본은 내 PDF를 불러와야 보입니다';
+}
+
+/* ---------- 화면 ---------- */
+function listNav(){
+  let h='',yr='';
+  D.forEach((e,i)=>{const y=e.title.slice(0,4);if(y!==yr){yr=y;h+=`<div class="yr">${y}</div>`}
+    h+=`<button data-i="${i}" class="${i===cur?'on':''}">${e.title.slice(5)}</button>`});
+  $('#list').innerHTML=h;
+  $('#list').querySelectorAll('button').forEach(b=>b.onclick=()=>{cur=+b.dataset.i;sel=0;render();scrollTo(0,0)});
+}
+const EMPTY=`<div class="empty"><b>시험지 원본이 없습니다.</b><br>
+  저작권 때문에 시험지 이미지는 이 저장소에 넣지 않았습니다.<br>
+  위쪽 <b>시험지 PDF 불러오기</b>로 본인이 가진 기출 PDF를 고르면<br>이 브라우저에만 저장되어 옆에 함께 보입니다.</div>`;
+function render(){
+  const e=D[cur]; listNav();
+  $('#title').textContent=e.title;
+  $('#pdf').href=pdfPrefix+e.id+'.pdf';
+  $('#pdf').textContent=pdfPrefix==='pdf/'?'시험지+답지 PDF':'답지 PDF';
+  $('#tMode').textContent=mode==='q'?'시험지 원본':'문항별 풀이';
+  if(mode==='p'){
+    $('#body').innerHTML='<div class="pages"></div>';
+    (async()=>{const box=$('.pages');let any=false;
+      for(let p=1;p<=e.pages;p++){const src=await pageSrc(e,p);if(!src)continue;any=true;
+        const im=new Image();im.loading='lazy';im.src=src;im.alt=p+'면';box.appendChild(im)}
+      if(!any)box.innerHTML=EMPTY})();
+    return;
+  }
+  page=e.qs[sel]?.p||1;
+  $('#body').innerHTML=`<div class="split"><div class="qs ${showWork?'':'hide-work'}">${e.qs.map((q,k)=>`
+    <article class="q ${k===sel?'sel':''}" data-k="${k}" id="q${k}">
+      <div class="qh"><span class="num">${q.q}</span><span class="pg">${q.p}면</span></div>
+      <div class="ans">${q.a}</div>
+      <div class="work">${q.w}</div>
+      ${q.fig?`<img class="fig" loading="lazy" src="figs/${q.fig}" alt="${q.q}번 답 그림">`:''}
+    </article>`).join('')}</div>
+    <aside class="viewer"><div class="vbar"><button id="pv">‹</button><span id="pl"></span><button id="nx">›</button></div>
+      <img id="pimg" alt="시험지" hidden><div id="ph"></div></aside></div>`;
+  document.querySelectorAll('.q').forEach(c=>c.onclick=()=>select(+c.dataset.k,false));
+  $('#pv').onclick=()=>setPage(page-1); $('#nx').onclick=()=>setPage(page+1);
+  setPage(page);
+}
+async function setPage(p){
+  const e=D[cur]; page=Math.min(Math.max(1,p),e.pages);
+  $('#pl').textContent=`${page} / ${e.pages}면`;
+  const src=await pageSrc(e,page), img=$('#pimg'), ph=$('#ph');
+  if(!img)return;
+  img.hidden=!src; ph.innerHTML=src?'':EMPTY; if(src)img.src=src;
+}
+function select(k,scroll){
+  const e=D[cur];sel=Math.min(Math.max(0,k),e.qs.length-1);
+  document.querySelectorAll('.q').forEach(c=>c.classList.toggle('sel',+c.dataset.k===sel));
+  setPage(e.qs[sel].p); if(scroll)$('#q'+sel).scrollIntoView({block:'start',behavior:'smooth'});
+}
+$('#tWork').onclick=()=>{showWork=!showWork;$('#tWork').classList.toggle('on',showWork);$('.qs')?.classList.toggle('hide-work',!showWork)};
+$('#tMode').onclick=()=>{mode=mode==='q'?'p':'q';render()};
+$('#file').onchange=ev=>{importPdfs([...ev.target.files]);ev.target.value=''};
+addEventListener('keydown',ev=>{if(mode!=='q')return;
+  if(ev.key==='j')select(sel+1,true); if(ev.key==='k')select(sel-1,true);});
+window.__importPdfs=importPdfs;   // 테스트용
+
+(async()=>{
+  hasLocalPages=await fetch('pages/'+D[0].id+'_p1.jpg',{method:'HEAD',cache:'no-store'}).then(r=>r.ok).catch(()=>false);
+  pdfPrefix=await fetch('pdf/'+D[0].id+'.pdf',{method:'HEAD',cache:'no-store'}).then(r=>r.ok?'pdf/':'solutions/').catch(()=>'solutions/');
+  await refreshStatus(); render();
+})();
+</script>
+</body>
+</html>
