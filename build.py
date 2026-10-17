@@ -55,14 +55,15 @@ def main():
     for d in ('pages', 'pdf', 'solutions'):
         os.makedirs(os.path.join(BASE, d), exist_ok=True)
 
+    found = {f: os.path.join(r, f) for r, _, fs in os.walk(a.src) for f in fs}   # 학년별 하위 폴더까지
     missing = []
     for e in data:
         tmp = os.path.join(BASE, 'solutions', e['id'] + '.pdf')
         if a.sol or not os.path.exists(tmp):
             answer_pdf(e, arch, tmp)
 
-        src = os.path.join(a.src, e['file'])
-        if not os.path.exists(src):
+        src = found.get(e['file'])
+        if not src:
             missing.append(e['file']); continue
 
         doc = pymupdf.open(src)

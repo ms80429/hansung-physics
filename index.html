@@ -18,6 +18,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Pretendard","
 nav{border-right:1px solid var(--line);padding:18px 12px;position:sticky;top:0;height:100vh;overflow:auto;background:var(--panel)}
 nav h1{font-size:15px;margin:0 8px 14px;letter-spacing:-.2px}
 nav h1 small{display:block;color:var(--muted);font-weight:400;font-size:12px}
+.grades{display:flex;gap:4px;margin:0 4px 6px}.grades button{flex:1;text-align:center;padding:6px 0;border:1px solid var(--line)}
 .yr{font-size:11px;color:var(--muted);margin:14px 8px 4px;font-weight:600;letter-spacing:.5px}
 nav button{display:block;width:100%;text-align:left;border:0;background:none;color:var(--ink);padding:7px 10px;border-radius:8px;font:inherit;font-size:13.5px;cursor:pointer}
 nav button:hover{background:var(--bg)}
@@ -59,7 +60,8 @@ header h2{margin:0;font-size:22px;letter-spacing:-.4px}
 <body>
 <div class="app">
   <nav>
-    <h1>물리 기출 풀이<small>한성과고 1학년 · 21회분</small></h1>
+    <h1>물리 기출 풀이<small>한성과고 1~3학년</small></h1>
+    <div class="grades" id="grades"></div>
     <div id="list"></div>
   </nav>
   <main>
@@ -76,7 +78,7 @@ header h2{margin:0;font-size:22px;letter-spacing:-.4px}
     <div id="body"></div>
   </main>
 </div>
-<script src="data.js?v=2"></script>
+<script src="data.js?v=3"></script>
 <script>
 const $=s=>document.querySelector(s);
 let cur=0,mode='q',showWork=true,page=1,sel=0,hasLocalPages=false,pdfPrefix='solutions/';
@@ -136,8 +138,11 @@ async function refreshStatus(){
 
 /* ---------- 화면 ---------- */
 function listNav(){
+  const g=D[cur].g;
+  $('#grades').innerHTML=[1,2,3].filter(n=>D.some(e=>e.g===n)).map(n=>`<button data-g="${n}" class="${n===g?'on':''}">${n}학년</button>`).join('');
+  $('#grades').querySelectorAll('button').forEach(b=>b.onclick=()=>{cur=D.findIndex(e=>e.g===+b.dataset.g);sel=0;render();scrollTo(0,0)});
   let h='',yr='';
-  D.forEach((e,i)=>{const y=e.title.slice(0,4);if(y!==yr){yr=y;h+=`<div class="yr">${y}</div>`}
+  D.forEach((e,i)=>{if(e.g!==g)return;const y=e.title.slice(0,4);if(y!==yr){yr=y;h+=`<div class="yr">${y}</div>`}
     h+=`<button data-i="${i}" class="${i===cur?'on':''}">${e.title.slice(5)}</button>`});
   $('#list').innerHTML=h;
   $('#list').querySelectorAll('button').forEach(b=>b.onclick=()=>{cur=+b.dataset.i;sel=0;render();scrollTo(0,0)});
