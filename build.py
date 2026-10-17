@@ -7,12 +7,14 @@
   pdf/      : 원본 시험지 + 답지 합본 PDF
 저장소에 들어가는 solutions/(풀이만 PDF)는 --sol 옵션으로 다시 만들 수 있다.
 """
-import argparse, io, json, os, sys
+import argparse, io, json, os, re, sys
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 FONT = r'C:/Windows/Fonts'          # 맑은 고딕 (다른 OS면 한글 TTF 폴더로 바꿀 것)
 CSS = """
 @font-face{font-family:mg;src:url(malgun.ttf)} @font-face{font-family:mg;src:url(malgunbd.ttf);font-weight:bold}
+@font-face{font-family:cm;src:url(cambria.ttc)} @font-face{font-family:sy;src:url(seguisym.ttf)}
+.cm{font-family:cm} .sy{font-family:sy}
 *{font-family:mg;font-size:9.5pt;line-height:1.45}
 h1{font-size:14pt;color:#b8322a;margin:0 0 6pt}
 .q{margin:0 0 8pt}
@@ -24,6 +26,20 @@ img{width:300pt}
 """
 
 
+def fallback(m):
+    """맑은 고딕에 없는 글자(⁻, ⁵~⁹, −, ĵ 등)만 다른 글꼴로 감싼다."""
+    import pymupdf
+    c = m.group()
+    if not FONTS:
+        FONTS.extend(pymupdf.Font(fontfile=os.path.join(FONT, f)) for f in ('malgun.ttf', 'cambria.ttc'))
+    if FONTS[0].has_glyph(ord(c)):
+        return c
+    return f"<span class='{'cm' if FONTS[1].has_glyph(ord(c)) else 'sy'}'>{c}</span>"
+
+
+FONTS = []
+
+
 def answer_pdf(exam, arch, out_path):
     import pymupdf
     html = f"<h1>{exam['title']} — 답 및 풀이</h1>"
@@ -31,6 +47,7 @@ def answer_pdf(exam, arch, out_path):
         html += (f"<div class='q'><span class='n'>{q['q']}</span> <span class='a'>답: {q['a']}</span>"
                  + (f"<br/><span class='w'>{q['w']}</span>" if q['w'] else '')
                  + (f"<br/><img src='{q['fig']}'/>" if q.get('fig') else '') + "</div>")
+    html = re.sub(r'[^\x00-\x7f]', fallback, html)
     story = pymupdf.Story(html=html, user_css=CSS, archive=arch)
     buf = io.BytesIO()
     w = pymupdf.DocumentWriter(buf)
