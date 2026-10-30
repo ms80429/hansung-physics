@@ -22,6 +22,7 @@ h1{font-size:14pt;color:#b8322a;margin:0 0 6pt}
 .a{font-weight:bold;color:#b8322a;font-size:10.5pt}
 .w{color:#222}
 .note{color:#7a5b00;font-size:8.5pt}
+.flag{color:#a85a12;font-size:8.5pt;font-weight:bold}
 img{width:300pt}
 """
 
@@ -46,6 +47,7 @@ def answer_pdf(exam, arch, out_path):
     for q in exam['qs']:
         html += (f"<div class='q'><span class='n'>{q['q']}</span> <span class='a'>답: {q['a']}</span>"
                  + (f"<br/><span class='w'>{q['w']}</span>" if q['w'] else '')
+                 + (f"<br/><span class='flag'>⚑ 검수: {q['flag']}</span>" if q.get('flag') else '')
                  + (f"<br/><img src='{q['fig']}'/>" if q.get('fig') else '') + "</div>")
     html = re.sub(r'[^\x00-\x7f]', fallback, html)
     story = pymupdf.Story(html=html, user_css=CSS, archive=arch)

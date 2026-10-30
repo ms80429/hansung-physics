@@ -43,6 +43,10 @@ header h2{margin:0;font-size:22px;letter-spacing:-.4px}
 .work:empty{display:none}
 .hide-work .work{display:none}
 .note{display:block;color:var(--note);font-size:12.5px;margin-top:4px}
+.flag{font-size:12px;font-weight:700;color:#fff;background:#d9822b;border-radius:6px;padding:1px 8px}
+.why{margin-top:8px;font-size:12.5px;color:#c06d1a;background:rgba(217,130,43,.14);border-radius:6px;padding:5px 9px}
+.cnt{float:right;font-size:11px;color:#d9822b;font-weight:700}
+.only-flag .q:not(.fl){display:none}
 .fig{margin-top:10px;max-width:100%;border-radius:8px;background:#fff;border:1px solid var(--line)}
 .viewer{position:sticky;top:16px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px}
 .vbar{display:flex;align-items:center;justify-content:space-between;margin:0 4px 8px;font-size:13px;color:var(--muted)}
@@ -69,6 +73,7 @@ header h2{margin:0;font-size:22px;letter-spacing:-.4px}
       <h2 id="title"></h2>
       <div class="tools">
         <button id="tWork" class="on">풀이 보기</button>
+        <button id="tFlag" title="모호해서 손풀이로 검수할 문항만">검수만</button>
         <button id="tMode">시험지 원본</button>
         <a id="pdf" target="_blank">답지 PDF</a>
         <label>시험지 PDF 불러오기<input id="file" type="file" accept="application/pdf" multiple></label>
@@ -78,10 +83,10 @@ header h2{margin:0;font-size:22px;letter-spacing:-.4px}
     <div id="body"></div>
   </main>
 </div>
-<script src="data.js?v=3"></script>
+<script src="data.js?v=4"></script>
 <script>
 const $=s=>document.querySelector(s);
-let cur=0,mode='q',showWork=true,page=1,sel=0,hasLocalPages=false,pdfPrefix='solutions/';
+let cur=0,mode='q',showWork=true,onlyFlag=false,page=1,sel=0,hasLocalPages=false,pdfPrefix='solutions/';
 const urlCache=new Map();
 
 /* ---------- 브라우저에 저장된 시험지 이미지 (IndexedDB) ---------- */
@@ -143,7 +148,7 @@ function listNav(){
   $('#grades').querySelectorAll('button').forEach(b=>b.onclick=()=>{cur=D.findIndex(e=>e.g===+b.dataset.g);sel=0;render();scrollTo(0,0)});
   let h='',yr='';
   D.forEach((e,i)=>{if(e.g!==g)return;const y=e.title.slice(0,4);if(y!==yr){yr=y;h+=`<div class="yr">${y}</div>`}
-    h+=`<button data-i="${i}" class="${i===cur?'on':''}">${e.title.slice(5)}</button>`});
+    const c=e.qs.filter(q=>q.flag).length;h+=`<button data-i="${i}" class="${i===cur?'on':''}">${e.title.slice(5)}${c?`<span class="cnt">⚑${c}</span>`:''}</button>`});
   $('#list').innerHTML=h;
   $('#list').querySelectorAll('button').forEach(b=>b.onclick=()=>{cur=+b.dataset.i;sel=0;render();scrollTo(0,0)});
 }
@@ -168,11 +173,12 @@ function render(){
   $('#body').innerHTML=`<div class="split">
     <aside class="viewer"><div class="vbar"><button id="pv">‹</button><span id="pl"></span><button id="nx">›</button></div>
       <img id="pimg" alt="시험지" hidden><div id="ph"></div></aside>
-    <div class="qs ${showWork?'':'hide-work'}">${e.qs.map((q,k)=>`
-    <article class="q ${k===sel?'sel':''}" data-k="${k}" id="q${k}">
-      <div class="qh"><span class="num">${q.q}</span><span class="pg">${q.p}면</span></div>
+    <div class="qs ${showWork?'':'hide-work'} ${onlyFlag?'only-flag':''}">${e.qs.map((q,k)=>`
+    <article class="q ${k===sel?'sel':''} ${q.flag?'fl':''}" data-k="${k}" id="q${k}">
+      <div class="qh"><span class="num">${q.q}</span><span class="pg">${q.p}면</span>${q.flag?'<span class="flag">⚑ 검수</span>':''}</div>
       <div class="ans">${q.a}</div>
       <div class="work">${q.w}</div>
+      ${q.flag?`<div class="why">검수: ${q.flag}</div>`:''}
       ${q.fig?`<img class="fig" loading="lazy" src="figs/${q.fig}" alt="${q.q}번 답 그림">`:''}
     </article>`).join('')}</div></div>`;
   document.querySelectorAll('.q').forEach(c=>c.onclick=()=>select(+c.dataset.k,false));
@@ -192,6 +198,7 @@ function select(k,scroll){
   setPage(e.qs[sel].p); if(scroll)$('#q'+sel).scrollIntoView({block:'start',behavior:'smooth'});
 }
 $('#tWork').onclick=()=>{showWork=!showWork;$('#tWork').classList.toggle('on',showWork);$('.qs')?.classList.toggle('hide-work',!showWork)};
+$('#tFlag').onclick=()=>{onlyFlag=!onlyFlag;$('#tFlag').classList.toggle('on',onlyFlag);$('.qs')?.classList.toggle('only-flag',onlyFlag)};
 $('#tMode').onclick=()=>{mode=mode==='q'?'p':'q';render()};
 $('#file').onchange=ev=>{importPdfs([...ev.target.files]);ev.target.value=''};
 addEventListener('keydown',ev=>{if(mode!=='q')return;
